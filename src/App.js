@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import "./App.css";
+import "./RangeInput.css";
 //import classNames from 'classnames';
 
 let video = null;
@@ -10,6 +11,9 @@ class App extends Component {
     rangeMax: 100,
     showVideoAnnotation: 'video',
     isPlaying: false,
+    duration: 0,
+    currentTime: 0,
+    videoSpeed: 1,
   }
 
   componentDidMount() {
@@ -22,9 +26,10 @@ class App extends Component {
    * Event Listener used to update the range input
    */
   timeUpdate = () => {
-    const currentTime = video.currentTime;
+    const currentTime = parseInt(video.currentTime, 10);
     let seeker = this.refs.seeker;
     seeker.value = currentTime;
+    this.setState({currentTime})
   }
 
   /**
@@ -33,8 +38,8 @@ class App extends Component {
    * Resets the range to the duration in seconds.
    */
   loadedMetaData = () => {
-    const duration = video.duration;
-    this.setState({rangeMax: duration});
+    const duration = parseInt(video.duration, 10);
+    this.setState({rangeMax: duration, duration});
   }
 
   /**
@@ -77,6 +82,12 @@ class App extends Component {
     }
   }
 
+  /**
+   * Updates canvas to the current frame
+   * 
+   * @param {int} height
+   * @param {int} width
+   */
   updateAnnotationCanvas = (height, width) => {
     const canvas = this.refs.annotationCanvas;
     canvas.height = height;
@@ -85,8 +96,39 @@ class App extends Component {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   }
 
+  /**
+   * Changes the video speed.
+   */
+  changeVideoSpeed = () => {
+    if(this.state.videoSpeed === 1) {
+      video.playbackRate = 2;
+      this.setState({videoSpeed: 2});
+    } else {
+      video.playbackRate = 1;
+      this.setState({videoSpeed: 1});
+    }
+  }
+
+  /**
+   * Steps current currentTime back on second
+   */
+  stepBackSecond = () => {
+    const newTime = this.state.currentTime - 1;
+    this.setState({currentTime: newTime});
+    video.currentTime = newTime
+  }
+
+  /**
+   * Steps current currentTime forward on second
+   */
+  stepForwardSecond = () => {
+    const newTime = this.state.currentTime + 1;
+    this.setState({currentTime: newTime});
+    video.currentTime = newTime
+  }
+
   render() {
-    const {rangeMax, showVideoAnnotation, isPlaying} = this.state;
+    const {rangeMax, showVideoAnnotation, isPlaying, duration, currentTime, videoSpeed} = this.state;
 
     return (
       <div className="App">
@@ -104,47 +146,51 @@ class App extends Component {
             </div>
             <div className="controls">
               <div className="speed">
-                <button>1x</button>
-                <button>2x</button>
+                <button onClick={this.changeVideoSpeed} className={videoSpeed === 1 ? 'selected' : ''}>1x</button>
+                <button onClick={this.changeVideoSpeed} className={videoSpeed === 2 ? 'selected' : ''}>2x</button>
               </div>
               <div className="play">
-                <button>Back</button>
-                <button onClick={this.playPause} disabled={showVideoAnnotation === 'annotation'}>{ !isPlaying ? 'Play' : 'Pause'}</button>
-                <button>Forward</button>
+                <button onClick={this.stepBackSecond}><i class="fas fa-caret-left"></i></button>
+                <button onClick={this.playPause} disabled={showVideoAnnotation === 'annotation'}>{ !isPlaying ? (<i class="fas fa-play"></i>) : (<i class="fas fa-pause"></i>)}</button>
+                <button onClick={this.stepForwardSecond}><i class="fas fa-caret-right"></i></button>
               </div>
-              <div className="sizing">
-                <button>large</button>
-                <button>full-sreen</button>
+              <div className="time">
+                { `${currentTime}/${duration} sec` }
               </div>
             </div>
           </div>
         </div>
         <div className="options">
-          <div className="form-group">
-            <label>Category</label>
-            <select>
-              <option>Sqaut</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Sub Category</label>
-            <select>
-              <option>Sqaut</option>
-            </select>
+          <div className="meta">
+            <div className="form-group">
+              <label>Category</label>
+              <select className="form-control">
+                <option>Sqaut</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Sub Category</label>
+              <select className="form-control">
+                <option>Sqaut</option>
+              </select>
+            </div>
+            <div className="meta-buttons">
+              <button className="btn btn-sm btn-secondary">Save</button>
+            </div>
           </div>
           <div className="marks">
             <div className="mark-list">
-              <ul>
-                <li>Mark</li>
+              <ul className="list-group">
+                <li className="list-group-item">Mark</li>
               </ul>
             </div>
             <div className="mark-buttons">
-              <button>Add Mark</button>
+              <button className="btn btn-sm btn-secondary">Add Mark</button>
             </div>
           </div>
           <div className="video-annotate">
             <div className="buttons">
-              <button onClick={this.toggelAnnotation}>{showVideoAnnotation === 'video' ? 'Annotate' : 'Video'}</button>
+              <button className="btn btn-secondary btn-block" onClick={this.toggelAnnotation}>{showVideoAnnotation === 'video' ? 'Annotate' : 'Video'}</button>
             </div>
           </div>
         </div>
