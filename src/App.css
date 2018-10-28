@@ -1,32 +1,84 @@
 .App {
-  text-align: center;
+  max-width: 100%;
+  width: 1200px;
+  margin: 5rem auto;
+  display: grid;
+  grid-template-columns: repeat(10, 10%);
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.video-area {
+  grid-column-start: 1;
+  grid-column-end: 8;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.video-area .controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.video-area video {
+  background-color: grey;
+  width: 900px;
+  max-width: 100%;
+}
+
+.video-area .scrubber {
+  display: block;
+  width: 100%;
+}
+
+.options {
+  padding: 10px 10px 0 10px;
+  grid-column-start: 8;
+  grid-column-end: 11;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.options .marks {
+  flex-grow: 2;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.options .marks .mark-list {
+  background-color: lightgray;
+  overflow-y: scroll;
+  border-radius: 8px;
+  padding: 5px;
+  height: 100%;
+}
+
+.options .video-annotate {
+  /*flex-grow: 1;*/
+  position: relative;
+}
+
+.options .video-annotate .buttons {
+  position: absolute;
+  bottom: 0;
+}
+
+.form-group {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input {
+  display: block;
+  width: 100%;
+}
+
+.form-group select {
+  display: block;
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+  visibility: hidden;
 }
